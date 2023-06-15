@@ -57,15 +57,18 @@ namespace PickMe
             networking.Register();
             if (MyAPIGateway.Session.IsServer)
             {
-                debugLog = MyAPIGateway.Utilities.WriteFileInLocalStorage("Debug.txt", typeof(Session));
-                factionControl.Setup();
-                Sh_Api = new ShieldApi();
-                if (Sh_Api != null)
+                using (debugLog = MyAPIGateway.Utilities.WriteFileInLocalStorage("Debug.txt", typeof(Session)))
                 {
-                    Sh_Api.Load();
+                    factionControl.Setup();
+                    Sh_Api = new ShieldApi();
+                    if (Sh_Api != null)
+                    {
+                        Sh_Api.Load();
+                    }
                 }
             }
         }
+
 
         public override void UpdateBeforeSimulation()
         {
@@ -87,6 +90,7 @@ namespace PickMe
                 currentMatch.Close();
                 currentField.Close();
                 debugLog.Close();
+                debugLog.Dispose(); // Ensure the file is disposed
             }
             Instance = null; // important for avoiding this object to remain allocated in memory
             MyAPIGateway.Utilities.MessageEntered -= MessageEntered;
